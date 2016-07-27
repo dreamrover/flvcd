@@ -35,7 +35,14 @@ def fetch_file(link)
     down = 0
     down = File.stat(name).size if File.exist?(name)
     initheader = nil
+'''
+    response = http.request_head(path)
+    length = response["content-length"].to_i
+    return down if down == length
 
+    down = 0 if down > length
+    initheader = {"Range" => "bytes=#{down}-"} if down < length
+'''
     http = Net::HTTP.new(host, port)
     http.request_get(path, initheader) do |resp|
         resp.header.each_header {|k, v| puts "#{k} = #{v}"}
